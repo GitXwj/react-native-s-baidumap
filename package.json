@@ -8,19 +8,21 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "arno",
-  "license": "ISC",
+  "license": "MIT",
   "keywords": [
     "react-native",
     "baidumap",
     "maps",
     "mapview"
   ],
+  "homepage": "https://github.com/react-native-community/react-native-webview#readme",
   "files": [
     "lib",
     "android",
     "iosLib",
     "index.d.ts",
-    "index.js"
+    "index.js",
+    "react-native-s-baidu-map.podspec"
   ],
   "repository": {
     "type": "git",
