@@ -24,7 +24,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/1035901787/react-native-s-baidumap"
+    "url": "https://github.com/GitXwj/react-native-s-baidumap.git"
   },
   "peerDependencies": {
     "react-native": ">=0.47"

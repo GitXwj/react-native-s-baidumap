@@ -9,8 +9,8 @@
 import Foundation
 
 @objc(BaiduMapSearch)
-class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegate {
-  
+class BaiduMapSearch: RCTEventEmitter, BMKPoiSearchDelegate, BMKSuggestionSearchDelegate {
+
 //  var searchInCityPrmResolve: RCTPromiseResolveBlock! //城市内搜索promise成功回调
 //  var searchInCityPrmReject: RCTPromiseRejectBlock! //城市内搜索promise失败回调
 //  var searchNearbyPrmResolve: RCTPromiseResolveBlock! //周边检索promise成功回调
@@ -23,8 +23,8 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
   var searchTypeAry: [Int] = []; //搜索类型
   let SEARCH_INCITY = 0; //城市内搜索
   let SEARCH_NEARBY = 1; //周边检索
-//  var hasListeners: Bool = false
-  
+  var hasListeners: Bool = false
+
   //初始化BMKPoiSearch实例
   lazy var POISearch: BMKPoiSearch = {
     let poiSearch = BMKPoiSearch()
@@ -39,18 +39,18 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
     suggestionSearch.delegate = self
     return suggestionSearch
   }()
-  
-//  @objc override func supportedEvents() -> [String]! {
-//     return ["BaiduPoiSearch", "BaiduRequestSuggestion"];
-//   }
-//
-//  override func startObserving() {
-//    hasListeners = true
-//  }
-//
-//  override func stopObserving() {
-//    hasListeners = false
-//  }
+
+  @objc override func supportedEvents() -> [String]! {
+     return ["BaiduPoiSearch", "BaiduRequestSuggestion"];
+   }
+
+  override func startObserving() {
+    hasListeners = true
+  }
+
+  override func stopObserving() {
+    hasListeners = false
+  }
 
   /**
   *城市内搜索
@@ -60,7 +60,7 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
       poiSearchPrmResolve = resolve;
       poiSearchPrmReject = reject;
       searchType = SEARCH_INCITY
-    
+
       //初始化请求参数类BMKCitySearchOption的实例
       let cityOption = BMKPOICitySearchOption()
       //检索关键字，必选。举例：天安门
@@ -95,7 +95,7 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
            NSLog("POI城市内检索失败")
        }
     }
-  
+
   /**
    *周边检索
    */
@@ -104,7 +104,7 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
       poiSearchPrmResolve = resolve;
       poiSearchPrmReject = reject;
       searchType = SEARCH_NEARBY
-    
+
       //初始化请求参数类BMKNearbySearchOption的实例
       let nearbyOption = BMKPOINearbySearchOption()
       /**
@@ -134,7 +134,7 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
 //     nearbyOption.isRadiusLimit = option.isRadiusLimit
      /**
       POI检索结果详细程度
-      
+
       BMK_POI_SCOPE_BASIC_INFORMATION: 基本信息
       BMK_POI_SCOPE_DETAIL_INFORMATION: 详细信息
       */
@@ -148,7 +148,7 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
      /**
       根据中心点、半径和检索词发起周边检索：异步方法，返回结果在BMKPoiSearchDelegate
       的onGetPoiResult里
-      
+
       nearbyOption 周边搜索的搜索参数类
       成功返回YES，否则返回NO
       */
@@ -159,12 +159,12 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
          NSLog("POI周边检索失败")
      }
   }
-  
+
   /**
    *输入提示检索
    */
   @objc func requestSuggestion(_ city: String, _ keyword: String, _ resolve:@escaping RCTPromiseResolveBlock, _ reject: @escaping RCTPromiseRejectBlock) {
-    
+
     searchPrmResolve = resolve;
     searchPrmReject = reject;
     //初始化请求参数类BMKSuggestionSearchOption的实例
@@ -188,8 +188,8 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
         NSLog("关键词检索失败")
     }
   }
-  
-    
+
+
   //MARK:BMKPoiSearchDelegate
   /**
    POI检索返回结果回调
@@ -215,15 +215,15 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
           poiList.append(data);
         }
         let res: [String : Any] = [ "code": 1000, "poiList": poiList, "type": searchType];
-//        sendJsEvent(name: "BaiduPoiSearch", data: res);
-        poiSearchPrmResolve(res);
+        sendJsEvent(name: "BaiduPoiSearch", data: res);
+        //poiSearchPrmResolve(res);
     }else{
         let res: [String : Any] = [ "code": -1, "msg": "Error:\(errorCode)", "type": searchType];
-        poiSearchPrmReject("-1", "Error:\(errorCode)", NSError(domain: "", code: -1, userInfo: res));
-//        sendJsEvent(name: "BaiduPoiSearch", data: res);
+        //poiSearchPrmReject("-1", "Error:\(errorCode)", NSError(domain: "", code: -1, userInfo: res));
+        sendJsEvent(name: "BaiduPoiSearch", data: res);
     }
   }
-  
+
   //MARK:BMKSuggestionSearchDelegate
  /**
   关键字检索结果回调
@@ -248,19 +248,20 @@ class BaiduMapSearch: NSObject, BMKPoiSearchDelegate, BMKSuggestionSearchDelegat
         poiList.append(data);
       }
       let res: [String : Any] = [ "code": 1000, "poiList": poiList, "type": 2];
-//      sendJsEvent(name: "BaiduRequestSuggestion", data: res);
-     searchPrmResolve(res);
+      sendJsEvent(name: "BaiduRequestSuggestion", data: res);
+     //searchPrmResolve(res);
     }else{
       let res: [String : Any] = [ "code": -1, "msg": "Error:\(error)", "type": 2];
-      searchPrmReject("-1", "Error:\(error)", NSError(domain: "", code: -1, userInfo: res));
-//      sendJsEvent(name: "BaiduRequestSuggestion", data: res);
+      //searchPrmReject("-1", "Error:\(error)", NSError(domain: "", code: -1, userInfo: res));
+      sendJsEvent(name: "BaiduRequestSuggestion", data: res);
     }
   }
-  
-//  func sendJsEvent(name: String, data: Any) {
-//    if(hasListeners) {
-//      self.sendEvent(withName: name, body: data)
-//    }
-//  }
-  
+
+  func sendJsEvent(name: String, data: Any) {
+    if(hasListeners) {
+      NSLog("sendJsEvent:", name)
+      self.sendEvent(withName: name, body: data)
+    }
+  }
+
 }

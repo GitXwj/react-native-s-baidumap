@@ -70,10 +70,11 @@ public class BaiduMapSearchModule extends ReactContextBaseJavaModule {
                     writableMap.putInt("type", type);
                     writableMap.putInt("code", 1000);
                     writableMap.putArray("poiList", data);
-                    poiSearchPromise.resolve(writableMap);
-//                onSendEvent("BaiduPoiSearch", writableMap);
+                    //poiSearchPromise.resolve(writableMap);
+                onSendEvent("BaiduPoiSearch", writableMap);
                 }else {
-                    poiSearchPromise.reject("-1", "搜索失败");
+                  onSendEvent("BaiduPoiSearch", writableMap);
+                    //poiSearchPromise.reject("-1", "搜索失败");
                 }
 
             }
@@ -121,10 +122,11 @@ public class BaiduMapSearchModule extends ReactContextBaseJavaModule {
                     writableMap.putInt("type", type);
                     writableMap.putInt("code", 1000);
                     writableMap.putArray("poiList", data);
-                    searchPromise.resolve(writableMap);
-//                onSendEvent("BaiduRequestSuggestion", writableMap);
+                    //searchPromise.resolve(writableMap);
+                onSendEvent("BaiduRequestSuggestion", writableMap);
                 }else {
-                    searchPromise.reject("-1", "搜索失败");
+                onSendEvent("BaiduRequestSuggestion", writableMap);
+                    //searchPromise.reject("-1", "搜索失败");
                 }
 
             }
